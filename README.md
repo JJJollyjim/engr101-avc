@@ -4,3 +4,4 @@ Tuesday 11am Team 3 - Autonomous Vehicle Challenge
 
 * Jamie McClymont - jamie.mcclymont@gmail.com
 * Mat Ruane - matr800@gmail.com
+* Samuel Douglas - sdouglas2998@gmail.com
