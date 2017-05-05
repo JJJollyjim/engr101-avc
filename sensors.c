@@ -16,7 +16,7 @@ int PUSH_BUTTON_PIN = 0;
 /* Raw readings */
 
 double readShortRangeIR() {
-	double value = read_analog(IR_PIN);
+	double value = read_analog(SHORT_RANGE_IR_PIN);
 	return value;
 }
 
@@ -42,7 +42,12 @@ Boolean readPushButton() {
 double takeAverage(String sensor, int duration = 100, int samples = 20) {
 	// Returns the average of _samples_ samples over _duration_ milliseconds
 	// for given IR sensor type.
+	// String sensor - takes either "ShortRangeIR" or "MedRangeIR"
+	// int duration - duration in milliseconds to take samples (Default: 100ms)
+	// int samples - number of samples to take an average of (Default: 20 samples)
+	
 	// TODO: make this work for durations greater than 1000ms (1 second).
+	
 	double sum = 0;
 	int delayBetweenSamples = duration / samples;
 
