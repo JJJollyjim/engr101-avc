@@ -1,2 +1,2 @@
-robot:robot.cpp
-	gcc -L/usr/lib -o robot robot.cpp -lE101
+all:
+	gcc -L/usr/lib -o robot robot.cpp camera.cpp camera.h -lE101
