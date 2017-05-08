@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdio.h>
+#include <time.h>
 #include "E101.h"
 
 /*
@@ -25,16 +25,12 @@ double readMedRangeIR() {
 	return value;
 }
 
-Boolean readPushButton() {
-	// assumes a push button is either ON or OFF, unsure if this is correct atm.
+int readPushButton() {
+	// assumes a push button is either ON or OFF
 	int value = read_digital(PUSH_BUTTON_PIN);
+	return value;
+}
 
-	if (value == 1) {
-		return true;
-	}
-	else {
-		return false;
-	}
 }
 
 /* Average readings */
