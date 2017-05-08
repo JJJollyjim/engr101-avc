@@ -1,12 +1,12 @@
-#include <stdio.h>
-#include <time.h>
-#include "E101.h"
-#include "camera.h"
+#include<stdio.h>
+#include<time.h>
+#include"E101.h"
+#include"camera.h"
 
 int drive() {
 
     // proportionality constant
-    float kp =; //TODO: find a reasonable value for this
+    float kp = 0.5;
 
     int proportional_signal;
 
