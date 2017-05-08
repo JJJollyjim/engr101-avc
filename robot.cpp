@@ -39,7 +39,7 @@ int main() {
     init();
     
     
-    while(True) {
+    while(true) {
 		printf("Current Error: %d", horizontalSample());		
 		display_picture(3,0);		
 		}
