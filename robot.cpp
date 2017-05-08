@@ -37,8 +37,14 @@ int drive() {
 
 int main() {
     init();
+    
+    
+    while(True) {
+		printf("Current Error: %d", horizontalSample());		
+		display_picture(3,0);		
+		}
 
-    drive();
+    //drive();
 
     return 0;
 }
