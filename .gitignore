@@ -1,1 +1,8 @@
-robot
+build
+lib/*
+bin/*
+
+
+.idea/
+CMakeLists.txt
+cmake-build-debug/
