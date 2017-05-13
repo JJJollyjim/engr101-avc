@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<time.h>
-#include"E101.h"
+#include<E101.h>
 #include"camera.h"
 
 int drive() {
@@ -29,7 +29,7 @@ int drive() {
         }
         **/
 
-        sleep1(0, 100000); // 0.1 seconds
+        sleep1(0,200000); // 0.2 seconds
     }
     return 0;
 }
