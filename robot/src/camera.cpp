@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<time.h>
-#include<E101.h>
+#include"E101.h"
 
 int horizontalSample() {
     // returns an int in the range -30600 to 30600
