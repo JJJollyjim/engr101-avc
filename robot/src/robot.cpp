@@ -29,7 +29,8 @@ int drive() {
         }
         **/
 
-        sleep1(0,200000); // 0.2 seconds
+        //TODO: sleep1 seems to cause compilation errors (undefined reference) when called within a while loop
+        // sleep1(0,200000); // 0.2 seconds
     }
     return 0;
 }
