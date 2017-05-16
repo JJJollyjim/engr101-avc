@@ -7,8 +7,8 @@
 using namespace std;
 
 // Global Variables
-String GATE_IP = null;
-String GATE_PORT = null;
+String GATE_IP = 0;
+String GATE_PORT = 0;
 
 //Tuning
 float KP = 0.5; // proportionality constant
@@ -32,7 +32,7 @@ int drive() {
         deltaRight = -1*proportional_signal/(120*1*KP)*254 ; //... Motors can run endlessly if set to 255.
 
         set_motor(1, (BASE_SPEED + deltaLeft));
-        set_motor(2, (BASE_SPEED + deltaRight)); 
+        set_motor(2, (BASE_SPEED + deltaRight));
 
         /*
         if (proportional_signal == 0) {
