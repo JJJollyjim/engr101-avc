@@ -1,20 +1,38 @@
 #include<stdio.h>
 #include<time.h>
+#include<iostream>
 #include"E101.h"
 #include"camera.h"
 
+using namespace std;
+
+// Global Variables
+String GATE_IP = null;
+String GATE_PORT = null;
+
+//Tuning
+float KP = 0.5; // proportionality constant
+int BASE_SPEED = 50;
+
+int openGate() {
+    // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
+
+}
+
 int drive() {
 
-    // proportionality constant
-    float kp = 0.5;
-
     int proportional_signal;
+    int deltaLeft;
+    int deltaRight;
 
     while(true) {
-        proportional_signal = horizontalSample() * kp;
+        proportional_signal = horizontalSample() * KP;
 
-        set_motor(1, (proportional_signal/(15*1*kp))*254);
-        set_motor(2, (-1*proportional_signal/(15*1*kp))*254);
+        deltaLeft = proportional_signal/(120*1*KP)*254; // 254 because of bug in library...
+        deltaRight = -1*proportional_signal/(120*1*KP)*254 ; //... Motors can run endlessly if set to 255.
+
+        set_motor(1, (BASE_SPEED + deltaLeft));
+        set_motor(2, (BASE_SPEED + deltaRight)); 
 
         /*
         if (proportional_signal == 0) {
