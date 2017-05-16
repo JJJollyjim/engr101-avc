@@ -1,5 +1,7 @@
 #include<stdio.h>
 #include<time.h>
+#include<iostream>
+using namespace std;
 #include"E101.h"
 #include"camera.h"
 
@@ -12,9 +14,21 @@ int drive() {
 
     while(true) {
         proportional_signal = horizontalSample() * kp;
+        
+        int baseSpeed = 10;
+        
+        double left = baseSpeed + (proportional_signal/(30600*kp))*254;
+        double right = baseSpeed + (-1*(proportional_signal/(30600*kp)))*254;
+        
+        if (left > 254) {
+			left = 254;
+			}
+		if (right > 254) {
+			right = 254;
+			}
 
-        set_motor(1, (proportional_signal/(15*1*kp))*254);
-        set_motor(2, (-1*proportional_signal/(15*1*kp))*254);
+        set_motor(1, left );
+        set_motor(2, right);
 
         /*
         if (proportional_signal == 0) {
@@ -29,6 +43,9 @@ int drive() {
         }
         **/
 
+		cout << "Current Error is " << horizontalSample() <<".\n";
+		cout << "Current Left Speed is " << left <<".\n";
+		cout << "Current Right Speed is " << right <<".\n";
         sleep1(0, 100000); // 0.1 seconds
     }
     return 0;
@@ -39,12 +56,13 @@ int main() {
     init();
     
     
-    while(true) {
-		printf("Current Error: %d", horizontalSample());		
-		display_picture(3,0);		
-		}
+    //while(true) {
+		//printf("Current Error: %d", horizontalSample());
+		//cout << "Current Error is " << horizontalSample() <<".\n";		
+	//	display_picture(0,1000);		
+	//	}
 
-    //drive();
+    drive();
 
     return 0;
 }
