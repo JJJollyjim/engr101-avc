@@ -7,7 +7,7 @@
 using namespace std;
 
 // Global Variables
-char[] GATE_IP = {"1","9","2",".","1","6","8",".","1",".","255"}; //TODO: Find correct IP for gate
+char GATE_IP[15] = {"1","9","2",".","1","6","8",".","1",".","255"}; //TODO: Find correct IP for gate
 int GATE_PORT = 0000; //TODO: Find correct port for gate
 
 //Tuning
