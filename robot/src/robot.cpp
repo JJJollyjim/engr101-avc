@@ -7,7 +7,7 @@
 using namespace std;
 
 // Global Variables
-string GATE_IP = "0.0.0.0"; //TODO: Find correct IP for gate
+char[] GATE_IP = {"1","9","2",".","1","6","8",".","1",".","255"}; //TODO: Find correct IP for gate
 int GATE_PORT = 0000; //TODO: Find correct port for gate
 
 //Tuning
@@ -24,7 +24,7 @@ int stopMotors() {
 
 int openGate() {
     //TODO: Find out what the actual gate opening process is, e101 wiki and Arthur's notes no help
-    //TODO: Ensure that strings and ints get auto-converted to char[] as needed by e101 methods, otherwise implement.
+    //TODO: password will need to be converted from int to char[] before passing to send_to_server().
 
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
@@ -33,7 +33,7 @@ int openGate() {
     connect_to_server(GATE_IP, GATE_PORT);
 
     // receive password from gate
-    password = recieve_from_server("give password pls"); // unclear what message should be sent to get password
+    password = receive_from_server("give password pls"); // unclear what message should be sent to get password
 
     // send password to gate, should open
     send_to_server(password);
