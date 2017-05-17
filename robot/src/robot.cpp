@@ -24,6 +24,7 @@ int stopMotors() {
 
 int openGate() {
     //TODO: Find out what the actual gate opening process is, e101 wiki and Arthur's notes no help
+    //TODO: Ensure that strings and ints get auto-converted to char[] as needed by e101 methods, otherwise implement.
 
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
@@ -38,7 +39,7 @@ int openGate() {
     send_to_server(password);
 
     //TODO: check gate has opened with sensors(+ account for time where gate is above sensors LoS but not fully open)
-    //TODO: wrap this in a for loop tha waits a reasonable time for gate to open before retrying
+    //TODO: wrap this in a for loop that waits a reasonable time for gate to open before retrying
 //    if (sensors no longer detect gate) {
 //        wait x seconds (for gate to fully open)
 //        return 1; // return that the gate has successfully opened
@@ -66,6 +67,8 @@ int drive() {
         derivative_signal = (error - previous_error) * KD; // (error - previous): range -240 to 240
         previous_error = error;
 
+        cout << "Raw Error: " << error << "\n";
+
         prop_component = proportional_signal/(120*1.0*KP);
         deriv_component = derivative_signal/(240*1.0*KD); // ? - unclear how to calculate derivative component
 
@@ -77,7 +80,10 @@ int drive() {
         set_motor(1, (BASE_SPEED + deltaLeft));
         set_motor(2, (BASE_SPEED + deltaRight));
 
-        // sleep1(0,100000); // 0.1 seconds - 10FPS
+        cout << "Left motor speed: " << (BASE_SPEED + deltaLeft) <<
+                " Right motor speed: " << (BASE_SPEED + deltaRight) << "\n";
+
+        sleep1(0,100000); // 0.1 seconds - 10FPS
     }
     return 0;
 }
