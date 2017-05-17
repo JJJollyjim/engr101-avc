@@ -7,7 +7,7 @@
 using namespace std;
 
 // Global Variables
-char GATE_IP[15] = {"1","9","2",".","1","6","8",".","1",".","255"}; //TODO: Find correct IP for gate
+char GATE_IP[] = {"1","9","2",".","1","6","8",".","1",".","255"}; //TODO: Find correct IP for gate
 int GATE_PORT = 0000; //TODO: Find correct port for gate
 
 //Tuning
@@ -28,12 +28,13 @@ int openGate() {
 
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
-    int password; // receive_from_server() returns an int according to e101.h
+    char password[]; // receive_from_server() returns an int according to e101.h
+    char message[] = {'g','i','v','e',' ','p','w'}; // unclear what message should be sent to get password
 
     connect_to_server(GATE_IP, GATE_PORT);
 
     // receive password from gate
-    password = receive_from_server("give password pls"); // unclear what message should be sent to get password
+    password = receive_from_server(message);
 
     // send password to gate, should open
     send_to_server(password);
