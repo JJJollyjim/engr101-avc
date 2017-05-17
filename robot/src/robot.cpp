@@ -34,7 +34,8 @@ int openGate() {
     connect_to_server(GATE_IP, GATE_PORT);
 
     // receive password from gate
-    password = receive_from_server(message);
+    int pwInt = receive_from_server(message);
+    sprintf(password,"%ld",pwInt);
 
     // send password to gate, should open
     send_to_server(password);
