@@ -7,8 +7,8 @@
 using namespace std;
 
 // Global Variables
-String GATE_IP = 0;
-String GATE_PORT = 0;
+string GATE_IP = 0;
+string GATE_PORT = 0;
 
 //Tuning
 float KP = 0.5; // proportionality constant
