@@ -24,7 +24,6 @@ int stopMotors() {
 
 int openGate() {
     //TODO: Find out what the actual gate opening process is, e101 wiki and Arthur's notes no help
-    //TODO: password will need to be converted from int to char[] before passing to send_to_server().
 
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
@@ -35,7 +34,7 @@ int openGate() {
 
     // receive password from gate
     int pwInt = receive_from_server(message);
-    sprintf(password,"%ld",pwInt);
+    sprintf(password,"%ld",pwInt); // convert to char[]
 
     // send password to gate, should open
     send_to_server(password);
@@ -62,6 +61,8 @@ int drive() {
     float PID_sum;
     int deltaLeft;
     int deltaRight;
+    int leftSpeed;
+    int rightSpeed;
 
     while(true) {
         error = horizontalSample(); // Value between -120 and 120
@@ -79,11 +80,26 @@ int drive() {
         deltaLeft = PID_sum*254; // 254 because of bug in library...
         deltaRight = -1*PID_sum*254 ; //... Motors can run endlessly if set to 255.
 
-        set_motor(1, (BASE_SPEED + deltaLeft));
-        set_motor(2, (BASE_SPEED + deltaRight));
+        leftSpeed = (BASE_SPEED + deltaLeft);
+        rightSpeed = (BASE_SPEED + deltaRight);
 
-        cout << "Left motor speed: " << (BASE_SPEED + deltaLeft) <<
-                " Right motor speed: " << (BASE_SPEED + deltaRight) << "\n";
+        if (leftSpeed > 254) {
+            leftSpeed = 254;
+        } else if (leftSpeed < -254) {
+            leftSpeed = -254;
+        }
+
+        if (rightSpeed > 254) {
+            rightSpeed = 254;
+        } else if (rightSpeed < -254) {
+            rightSpeed = -254;
+        }
+
+        set_motor(1, leftSpeed);
+        set_motor(2, rightSpeed);
+
+        cout << "Left motor speed: " << leftSpeed <<
+                " Right motor speed: " << rightSpeed << "\n";
 
         sleep1(0,100000); // 0.1 seconds - 10FPS
     }
