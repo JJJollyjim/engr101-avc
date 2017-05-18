@@ -35,3 +35,15 @@ int horizontalSample() {
 
     return (int) sum;
 }
+
+int whiteness() {
+	int whiteness = 0;
+	for (int i = 1; i < 32; i++) {
+		int w = get_pixel(120,i*10,3);
+		whiteness += w;
+	}
+	
+	cout << "White" << whiteness << endl;
+
+	return whiteness;
+}

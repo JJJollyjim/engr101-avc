@@ -11,9 +11,10 @@ char GATE_IP[15] = {'1','9','2','.','1','6','8','.','1','.','2','5','5'}; //TODO
 int GATE_PORT = 0000; //TODO: Find correct port for gate
 
 //Tuning
-float KP = 0.5; // proportionality constant
-float KD = 0.5; // derivative constant
-int BASE_SPEED = 50;
+float KP = 0.7; // proportionality constant
+float KD = 0.4; // derivative constant
+int BASE_SPEED = 0;
+int TURNINESS = 32;
 
 int stopMotors() {
     // Sets speed of both motors to 0
@@ -70,38 +71,46 @@ int drive() {
         derivative_signal = (error - previous_error) * KD; // (error - previous): range -240 to 240
         previous_error = error;
 
-        cout << "Raw Error: " << error << "\n";
+	if (whiteness() < 1500) {
+		cout << "BLACK";
+		leftSpeed = -60;
+		rightSpeed = -60;
+	} else {
+		cout << "Raw Error: " << error << "\n";
 
-        prop_component = proportional_signal/(120*1.0*KP);
-        deriv_component = derivative_signal/(240*1.0*KD); // ? - unclear how to calculate derivative component
+		prop_component = proportional_signal/(120*1.0*KP);
+		deriv_component = derivative_signal/(240*1.0*KD); // ? - unclear how to calculate derivative component
 
-        PID_sum = prop_component + deriv_component;
+		PID_sum = 0-(prop_component + deriv_component);
 
-        deltaLeft = PID_sum*254; // 254 because of bug in library...
-        deltaRight = -1*PID_sum*254 ; //... Motors can run endlessly if set to 255.
+		deltaLeft = PID_sum*TURNINESS; // 254 because of bug in library...
+		deltaRight = -1*PID_sum*TURNINESS ; //... Motors can run endlessly if set to 255.
 
-        leftSpeed = (BASE_SPEED + deltaLeft);
-        rightSpeed = (BASE_SPEED + deltaRight);
+		leftSpeed = (BASE_SPEED + deltaLeft);
+		rightSpeed = (BASE_SPEED + deltaRight);
+	}
 
-        if (leftSpeed > 254) {
-            leftSpeed = 254;
-        } else if (leftSpeed < -254) {
-            leftSpeed = -254;
+        if (leftSpeed > 250) {
+            leftSpeed = 250;
+        } else if (leftSpeed < -250) {
+            leftSpeed = -250;
         }
 
-        if (rightSpeed > 254) {
-            rightSpeed = 254;
-        } else if (rightSpeed < -254) {
-            rightSpeed = -254;
+        if (rightSpeed > 250) {
+            rightSpeed = 250;
+        } else if (rightSpeed < -250) {
+            rightSpeed = -250;
         }
 
-        set_motor(1, leftSpeed);
-        set_motor(2, rightSpeed);
+        //set_motor(1, leftSpeed);
+        //set_motor(2, rightSpeed);
 
         cout << "Left motor speed: " << leftSpeed <<
                 " Right motor speed: " << rightSpeed << "\n";
 
-        sleep1(0,100000); // 0.1 seconds - 10FPS
+
+	stopMotors();
+        sleep1(0,50000); // 0.1 seconds - 10FPS
     }
     return 0;
 }

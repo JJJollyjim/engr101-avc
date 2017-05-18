@@ -1,0 +1,2 @@
+int horizontalSample();
+int whiteness();
