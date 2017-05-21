@@ -8,7 +8,7 @@ using namespace std;
 int horizontalSample() {
     // returns an int in the range -120 to 120
     int pixels[32];
-    double sum;
+    double sum = 0;
 
     take_picture();
 
