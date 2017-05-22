@@ -7,8 +7,8 @@
 using namespace std;
 
 // Global Variables
-char GATE_IP[15] = {'1','9','2','.','1','6','8','.','1','.','2','5','5'}; //TODO: Find correct IP for gate
-int GATE_PORT = 0000; //TODO: Find correct port for gate
+char GATE_IP[15] = {'1','3','0','.','1','9','5','.','6','.','1','9','6'}; \
+int GATE_PORT = 1024;
 
 //Tuning
 float KP = 0.7; // proportionality constant
@@ -24,12 +24,11 @@ int stopMotors() {
 }
 
 int openGate() {
-    //TODO: Find out what the actual gate opening process is, e101 wiki and Arthur's notes no help
 
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
-    char password[10]; // receive_from_server() returns an int according to e101.h
-    char message[10] = {'g','i','v','e',' ','p','w'}; // unclear what message should be sent to get password
+    char password[24]; // receive_from_server() returns an int according to e101.h
+    char message[6] = {'P','l','e','a','s','e'; 
 
     connect_to_server(GATE_IP, GATE_PORT);
 
@@ -37,7 +36,7 @@ int openGate() {
     int pwInt = receive_from_server(message);
     sprintf(password,"%ld",pwInt); // convert to char[]
 
-    // send password to gate, should open
+    // send password to gate, should open for 4 seconds
     send_to_server(password);
 
     //TODO: check gate has opened with sensors(+ account for time where gate is above sensors LoS but not fully open)
