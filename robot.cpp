@@ -13,7 +13,7 @@ int GATE_PORT = 0000; //TODO: Find correct port for gate
 //Tuning
 float KP = 0.7; // proportionality constant
 float KD = 0.4; // derivative constant
-int BASE_SPEED = 0;
+int BASE_SPEED = 40;
 int TURNINESS = 32;
 
 int stopMotors() {
@@ -71,10 +71,10 @@ int drive() {
         derivative_signal = (error - previous_error) * KD; // (error - previous): range -240 to 240
         previous_error = error;
 
-	if (whiteness() < 1500) {
+	if (whiteness() < 2200) {
 		cout << "BLACK";
-		leftSpeed = -60;
-		rightSpeed = -60;
+		leftSpeed = -45;
+		rightSpeed = -45;
 	} else {
 		cout << "Raw Error: " << error << "\n";
 
