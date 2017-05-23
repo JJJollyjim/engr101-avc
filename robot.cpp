@@ -7,7 +7,7 @@
 using namespace std;
 
 // Global Variables
-char GATE_IP[15] = {'1','3','0','.','1','9','5','.','6','.','1','9','6'}; \
+char GATE_IP[15] = {'1','3','0','.','1','9','5','.','6','.','1','9','6'};
 int GATE_PORT = 1024;
 
 //Tuning
@@ -28,13 +28,15 @@ int openGate() {
     // Listens for gate to broadcast password, then sends that password to the gate, resulting in the gate opening.
 
     char password[24]; // receive_from_server() returns an int according to e101.h
-    char message[6] = {'P','l','e','a','s','e'; 
+    char message[11] = {0x1B, '[', '5', 'm', 'P','l','e','a','s','e'}; 
 
     connect_to_server(GATE_IP, GATE_PORT);
 
+    send_to_server(message);
+
     // receive password from gate
-    int pwInt = receive_from_server(message);
-    sprintf(password,"%ld",pwInt); // convert to char[]
+    int pwInt = receive_from_server(password);
+    printf("%s %ld\n",password,pwInt); // convert to char[]
 
     // send password to gate, should open for 4 seconds
     send_to_server(password);
@@ -101,14 +103,13 @@ int drive() {
             rightSpeed = -250;
         }
 
-        //set_motor(1, leftSpeed);
-        //set_motor(2, rightSpeed);
+        set_motor(1, leftSpeed);
+        set_motor(2, rightSpeed);
 
         cout << "Left motor speed: " << leftSpeed <<
                 " Right motor speed: " << rightSpeed << "\n";
 
 
-	stopMotors();
         sleep1(0,50000); // 0.1 seconds - 10FPS
     }
     return 0;
@@ -117,7 +118,10 @@ int drive() {
 int main() {
     init();
 
+    //openGate();
     drive();
+
+sleep1(1,0);
 
     //TODO: Implement a way to break out of drive loop and safely stop motors - Wait for an input in terminal?
     // if (program end condition) {
