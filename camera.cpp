@@ -47,3 +47,24 @@ int whiteness() {
 
 	return whiteness;
 }
+
+boolean intersection() {
+	int lWhiteness = 0;
+	int rWhiteness = 0;
+	for(int i = 1; i < 24; i++) {
+		int lW = get_pixel(i*10,80,3);
+		int rW = get_pixel(i*10,240,3);
+		if(lW > 127) {
+			lWhiteness = lWhiteness + lW;
+		}
+		if(rW > 127) {
+			rWhiteness = rWhiteness + rW;
+		}
+	}
+	if(lW > 300) {
+		if(rW > 300) {
+			return true;
+		}
+	}
+	return false;
+}
