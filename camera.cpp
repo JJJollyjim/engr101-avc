@@ -38,12 +38,18 @@ int horizontalSample() {
 
 int whiteness() {
 	int whiteness = 0;
-	for (int i = 1; i < 32; i++) {
-		int w = get_pixel(120,i*10,3);
-		whiteness += w;
+	for (int y = 110; y < 130; y++) {
+		for (int i = 1; i < 320; i++) {
+			int w = get_pixel(y,i,3);
+			if (w > 127) {
+				whiteness++;
+			}
+		}
 	}
 	
 	cout << "White" << whiteness << endl;
+
+update_screen();
 
 	return whiteness;
 }
