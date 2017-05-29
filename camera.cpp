@@ -113,15 +113,15 @@ int identifyPaths() {
         }
     }
 
-    if (northPixels >= 40) {
+    if (northPixels >= 40 && northPixels <= 80) {
         paths = paths | TOP;
     }
 
-    if (eastPixels >= 40) {
+    if (eastPixels >= 40 && northPixels <= 80) {
         paths = paths | RIGHT;
     }
 
-    if (westPixels >= 40) {
+    if (westPixels >= 40 && northPixels <= 80) {
         paths = paths | LEFT;
     }
 

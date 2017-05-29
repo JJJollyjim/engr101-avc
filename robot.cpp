@@ -22,10 +22,10 @@ int BASE_SPEED = 42;
 int TURNINESS = 1;
 int BLACK_THRESH = 3;
 
-int TURN_TIME = 600000;
+int TURN_TIME = 400000;
 int TURN_TIME_180 = 900000;
 
-int ACTUALLY_SET_MOTORS = 0;
+int ACTUALLY_SET_MOTORS = 1;
 
 int stopMotors() {
     // Sets speed of both motors to 0
@@ -69,14 +69,22 @@ int drive() {
     int deltaLeft;
     int deltaRight;
 
-    int lastPaths = 0;
-    int doublePathFrames = 0;
+    int paths = 99;
+    int consecutivePathFrames = 0;
 
     while(true) {
         double error = horizontalSample();
         double errorHigh = horizontalSampleHigh();
 
-        int paths = identifyPaths();
+        int lastPaths = paths;
+        paths = identifyPaths();
+
+        if (paths == lastPaths) {
+            consecutivePathFrames++;
+        } else {
+            consecutivePathFrames = 0;
+        }
+
         int leftSpeed = 0;
         int rightSpeed = 0;
 
@@ -91,96 +99,70 @@ int drive() {
 
         //cout << whitenessval << ", ";
 
-        cout << paths << " " << lastPaths;
+        //cout << "p." << paths << ", cons."<< consecutivePathFrames;
+        cout << whitenessval;
 
-        if (doublePathFrames > 1 && paths == lastPaths && paths == (LEFT | RIGHT)) {
-            cout << "<> TURNING LEFT  ";
-            if (doublePathFrames > 1 && ACTUALLY_SET_MOTORS) {
-                set_motor(doublePathFrames > 1 && 1, 40);
-                set_motor(doublePathFrames > 1 && 2, -110);
-                sleep1(doublePathFrames > 1 && 0,TURN_TIME);
-                set_motor(doublePathFrames > 1 && 1, 0);
-                set_motor(doublePathFrames > 1 && 2, 0);
-            }
-        } if (doublePathFrames > 1 && paths == lastPaths && paths == LEFT) {
-            cout << "<  TURNING LEFT  ";
-            if (doublePathFrames > 1 && paths == lastPaths && ACTUALLY_SET_MOTORS) {
-                set_motor(doublePathFrames > 1 && 1, 40);
-                set_motor(doublePathFrames > 1 && 2, -110);
-                sleep1(doublePathFrames > 1 && 0,TURN_TIME);
-                set_motor(doublePathFrames > 1 && 1, 0);
-                set_motor(doublePathFrames > 1 && 2, 0);
-            }
-        } else if (doublePathFrames > 1 && paths == lastPaths && paths == RIGHT) {
-            cout << " > TURNING RIGHT ";
+        if (consecutivePathFrames > 3 && paths == (LEFT | RIGHT)) {
+            cout << "<> TURNING LEFT  " << endl;
             if (ACTUALLY_SET_MOTORS) {
-                set_motor(1, -110);
-                set_motor(2, 40);
+                set_motor(1, 40);
+                set_motor(2, -110);
                 sleep1(0,TURN_TIME);
                 set_motor(1, 0);
                 set_motor(2, 0);
             }
         } else {
             if (whitenessval < BLACK_THRESH) {
-            leftSpeed = -40;
-            rightSpeed = -40;
-        } else {
-            // cout << "W ";
-            double PID_sum;
-            if (paths == (LEFT | RIGHT | TOP)) {
-                doublePathFrames++;
-                cout << "Frame++: " << doublePathFrames << endl;
-                cout << endl;
-                cout << endl;
-
-                PID_sum = 0;
-
+                leftSpeed = -40;
+                rightSpeed = -40;
+            } else if (consecutivePathFrames > 1 && paths == (LEFT | TOP)) {
+                cout << "FULL SPEED AHEAD";
+                leftSpeed = 70;
+                rightSpeed = 70;
             } else {
-                PID_sum = 0-(prop_signal + deriv_signal + deltap_signal);
+                // cout << "W ";
+                double PID_sum = 0-(prop_signal + deriv_signal + deltap_signal);
+
+                deltaLeft = PID_sum;
+                deltaRight = -1*PID_sum;
+
+                // cout << "P " << prop_signal << ", Delta " << deltap_signal;
+
+                if (deltaLeft < 0)
+                    deltaLeft *= 2;
+                if (deltaRight < 0)
+                    deltaRight *= 2;
+
+                leftSpeed = (BASE_SPEED + deltaLeft);
+                rightSpeed = (BASE_SPEED + deltaRight);
             }
 
 
-            deltaLeft = PID_sum;
-            deltaRight = -1*PID_sum;
+            if (leftSpeed > 250) {
+                leftSpeed = 250;
+            } else if (leftSpeed < -250) {
+                leftSpeed = -250;
+            }
 
-            // cout << "P " << prop_signal << ", Delta " << deltap_signal;
+            if (rightSpeed > 250) {
+                rightSpeed = 250;
+            } else if (rightSpeed < -250) {
+                rightSpeed = -250;
+            }
 
-            if (deltaLeft < 0)
-                deltaLeft *= 2;
-            if (deltaRight < 0)
-                deltaRight *= 2;
+            if (ACTUALLY_SET_MOTORS) {
+                set_motor(1, -rightSpeed);
+                set_motor(2, -leftSpeed);
+            }
 
-            leftSpeed = (BASE_SPEED + deltaLeft);
-            rightSpeed = (BASE_SPEED + deltaRight);
+            cout << endl;
+            //cout << " " << leftSpeed <<
+            //":" << rightSpeed << ", " << whitenessval;
+
+            //cout << endl;
+
         }
-
-
-        if (leftSpeed > 250) {
-            leftSpeed = 250;
-        } else if (leftSpeed < -250) {
-            leftSpeed = -250;
-        }
-
-        if (rightSpeed > 250) {
-            rightSpeed = 250;
-        } else if (rightSpeed < -250) {
-            rightSpeed = -250;
-        }
-
-        if (ACTUALLY_SET_MOTORS) {
-            set_motor(1, -rightSpeed);
-            set_motor(2, -leftSpeed);
-        }
-
-        cout << endl;
-        //cout << " " << leftSpeed <<
-        //":" << rightSpeed << ", " << whitenessval;
-
-        //cout << endl;
-
-    }
-    lastPaths = paths;
-    sleep1(0,5000); // 0.1 seconds - 10FPS
+        sleep1(0,5000); // 0.1 seconds - 10FPS
     }
     return 0;
 }
@@ -189,7 +171,7 @@ int main() {
     init();
     open_screen_stream();
 
-    //openGate();
+    openGate();
     drive();
 
     sleep1(1,0);
