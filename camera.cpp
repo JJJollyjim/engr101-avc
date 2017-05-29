@@ -11,6 +11,11 @@ using namespace std;
 #define LOW_LINE 120
 #define HIGH_LINE 40
 
+#define LEFT 1
+#define RIGHT 2
+#define TOP 4
+
+
 unsigned char dataFromLastTime[320];
 
 double horizontalSample() {
@@ -74,16 +79,10 @@ int whiteness() {
 #define MAX_PIXELS 40
 
 int identifyPaths() {
-    /* When called identifies if there are paths to the north, east and west.
-     * returns a string containing "NEW" if junction has all paths, "E" if only eastern path etc.
-     * if a empty string is returned, then this method shouldn't have been called in the first place eg. in curves quad2
-     */
     int paths = 0;
-    double northPixels;
-    double eastPixels;
-    double westPixels;
-
-    take_picture();
+    int northPixels = 0;
+    int eastPixels = 0;
+    int westPixels = 0;
 
     //North
     for (int i = 0; i < 320; i++) {
@@ -96,7 +95,7 @@ int identifyPaths() {
     }
     //East
     for (int i = 0; i < 240; i++) {
-        int w = get_pixel(i,0,3);
+        int w = get_pixel(i,319,3);
 
         // Filters noise by simplifying pixels as either black or white, depending on th white value of the pixel
         if (w > BLACK_THRESHOLD) {
@@ -105,8 +104,8 @@ int identifyPaths() {
     }
 
     //West
-    for (int i = 1; i < 240; i++) {
-        int w = get_pixel(i,319,3);
+    for (int i = 0; i < 240; i++) {
+        int w = get_pixel(i,0,3);
 
         // Filters noise by simplifying pixels as either black or white, depending on th white value of the pixel
         if (w > BLACK_THRESHOLD) {
@@ -114,19 +113,19 @@ int identifyPaths() {
         }
     }
 
-//    if (northPixels >= ) {
-//        paths += "N";
-//    }
-//
-//    if (eastPixels >= 160/sampleInterval * accuracy) {
-//        paths += "E";
-//    }
-//
-//    if (westPixels >= 160/sampleInterval * accuracy) {
-//        paths += "W";
-//    }
+    if (northPixels >= 40) {
+        paths = paths | TOP;
+    }
+
+    if (eastPixels >= 40) {
+        paths = paths | RIGHT;
+    }
+
+    if (westPixels >= 40) {
+        paths = paths | LEFT;
+    }
 
 
-    cout << endl << "LEFT: " << westPixels << ", TOP: " << northPixels << ", RIGHT: " << eastPixels << endl;
+    //cout << endl << "LEFT: " << westPixels << ", TOP: " << northPixels << ", RIGHT: " << eastPixels << endl;
     return paths;
 }

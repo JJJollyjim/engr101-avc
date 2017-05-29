@@ -6,6 +6,10 @@
 
 using namespace std;
 
+#define LEFT 1
+#define RIGHT 2
+#define TOP 4
+
 // Global Variables
 char GATE_IP[15] = {'1','3','0','.','1','9','5','.','6','.','1','9','6'};
 int GATE_PORT = 1024;
@@ -14,11 +18,14 @@ int GATE_PORT = 1024;
 double KP = 0.5; // proportionality constant
 double KD = 0; // derivative constant
 double KDelta = 0; // high-low constant
-int BASE_SPEED = 35;
+int BASE_SPEED = 42;
 int TURNINESS = 1;
 int BLACK_THRESH = 3;
 
-int ACTUALLY_SET_MOTORS = 1;
+int TURN_TIME = 600000;
+int TURN_TIME_180 = 900000;
+
+int ACTUALLY_SET_MOTORS = 0;
 
 int stopMotors() {
     // Sets speed of both motors to 0
@@ -61,12 +68,17 @@ int drive() {
     double previous_error = 0;
     int deltaLeft;
     int deltaRight;
-    int leftSpeed;
-    int rightSpeed;
+
+    int lastPaths = 0;
+    int doublePathFrames = 0;
 
     while(true) {
         double error = horizontalSample();
         double errorHigh = horizontalSampleHigh();
+
+        int paths = identifyPaths();
+        int leftSpeed = 0;
+        int rightSpeed = 0;
 
         double prop_signal = error * KP;
         double deriv_signal = (error - previous_error) * KD; // (error - previous): range -240 to 240
@@ -75,21 +87,63 @@ int drive() {
 
         int whitenessval = whiteness();
 
-        cout << whitenessval << ", ";
+        //cout << "___" << doublePathFrames << "___";
 
-        if (whitenessval < BLACK_THRESH) {
-            cout << "B ";
-            leftSpeed = -45;
-            rightSpeed = -45;
+        //cout << whitenessval << ", ";
+
+        cout << paths << " " << lastPaths;
+
+        if (doublePathFrames > 1 && paths == lastPaths && paths == (LEFT | RIGHT)) {
+            cout << "<> TURNING LEFT  ";
+            if (doublePathFrames > 1 && ACTUALLY_SET_MOTORS) {
+                set_motor(doublePathFrames > 1 && 1, 40);
+                set_motor(doublePathFrames > 1 && 2, -110);
+                sleep1(doublePathFrames > 1 && 0,TURN_TIME);
+                set_motor(doublePathFrames > 1 && 1, 0);
+                set_motor(doublePathFrames > 1 && 2, 0);
+            }
+        } if (doublePathFrames > 1 && paths == lastPaths && paths == LEFT) {
+            cout << "<  TURNING LEFT  ";
+            if (doublePathFrames > 1 && paths == lastPaths && ACTUALLY_SET_MOTORS) {
+                set_motor(doublePathFrames > 1 && 1, 40);
+                set_motor(doublePathFrames > 1 && 2, -110);
+                sleep1(doublePathFrames > 1 && 0,TURN_TIME);
+                set_motor(doublePathFrames > 1 && 1, 0);
+                set_motor(doublePathFrames > 1 && 2, 0);
+            }
+        } else if (doublePathFrames > 1 && paths == lastPaths && paths == RIGHT) {
+            cout << " > TURNING RIGHT ";
+            if (ACTUALLY_SET_MOTORS) {
+                set_motor(1, -110);
+                set_motor(2, 40);
+                sleep1(0,TURN_TIME);
+                set_motor(1, 0);
+                set_motor(2, 0);
+            }
         } else {
-            cout << "W ";
+            if (whitenessval < BLACK_THRESH) {
+            leftSpeed = -40;
+            rightSpeed = -40;
+        } else {
+            // cout << "W ";
+            double PID_sum;
+            if (paths == (LEFT | RIGHT | TOP)) {
+                doublePathFrames++;
+                cout << "Frame++: " << doublePathFrames << endl;
+                cout << endl;
+                cout << endl;
 
-            double PID_sum = 0-(prop_signal + deriv_signal + deltap_signal);
+                PID_sum = 0;
+
+            } else {
+                PID_sum = 0-(prop_signal + deriv_signal + deltap_signal);
+            }
+
 
             deltaLeft = PID_sum;
-            deltaRight = -1*PID_sum ;
+            deltaRight = -1*PID_sum;
 
-            cout << "P " << prop_signal << ", Delta " << deltap_signal;
+            // cout << "P " << prop_signal << ", Delta " << deltap_signal;
 
             if (deltaLeft < 0)
                 deltaLeft *= 2;
@@ -118,12 +172,15 @@ int drive() {
             set_motor(2, -leftSpeed);
         }
 
+        cout << endl;
         //cout << " " << leftSpeed <<
         //":" << rightSpeed << ", " << whitenessval;
 
-        cout << endl;
+        //cout << endl;
 
-        sleep1(0,5000); // 0.1 seconds - 10FPS
+    }
+    lastPaths = paths;
+    sleep1(0,5000); // 0.1 seconds - 10FPS
     }
     return 0;
 }
